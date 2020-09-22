@@ -1,0 +1,51 @@
+.container {
+  padding-top: 100px;
+  display: flex;
+  // position: absolute;
+  justify-content: center;
+  // overflow: hidden;
+  // align-items: center;
+  width: 100%;
+  // top: 0;  
+  transition: 0.7s ease;
+}
+
+.open .container {
+  transform:translateX(518px);
+}
+
+h1,
+.count,
+.subtitle,
+.func-btn {
+  @include flexbox;
+}
+
+h1,
+.subtitle {
+  color: $dark;
+}
+
+.clock {
+  margin: 50px;
+}
+
+.func-btn{
+  margin-bottom:51px;
+  .circlebtn{
+    &:first-child{
+      margin-right:75px;
+    }
+    &:last-child{
+      margin-left:75px;
+    }
+    .fa-play, .fa-pause, .fa-undo-alt{
+      color: $secondary-lighter;
+      &:active, &:hover{
+        color: $primary;
+      }
+    }
+  }
+}
+
+
