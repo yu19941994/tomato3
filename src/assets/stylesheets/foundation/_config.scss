@@ -11,13 +11,6 @@ $white: #ffffff;
 $success: #316901;
 $success-state: #b5e254;
 
-// ----- Size ----- //
-$xs-media: 360px;
-$sm-media: 480px;
-$md-media: 768px;
-$lg-media: 1024px;
-$xl-media: 1124px;
-
 // ----- Font ----- //
 $h1: 40px;
 $h2: 24px;
@@ -28,6 +21,12 @@ $h6: 12px;
 $h7: 10px;
 $text: 50px;
 
+// ----- Size ----- //
+$xs-media: 360px;
+$sm-media: 480px;
+$md-media: 768px;
+$lg-media: 1024px;
+$xl-media: 1124px;
 
 @mixin smallphone {
   @media (max-width: $xs-media) {

@@ -1,17 +1,32 @@
 .container {
   padding-top: 100px;
-  display: flex;
   // position: absolute;
-  justify-content: center;
-  // overflow: hidden;
-  // align-items: center;
-  width: 100%;
-  // top: 0;  
+  // display: flex;
+  // justify-content: center;
+  width: 85%;
+  // margin: 0 auto;
+  transform: translateX(82px);
   transition: 0.7s ease;
+  // @include pad(){
+  //   transform: translateX(0px);
+  // }
+  &-inside{
+     display: flex;
+     justify-content: center;
+     flex-direction: column;
+  }
 }
 
 .open .container {
-  transform:translateX(518px);
+  transform:translateX(600px);
+  width: 35%;
+  @include pc(){
+    transform: translateX(428px);
+  }
+  @include pad(){
+    display: none;
+  }
+ 
 }
 
 h1,

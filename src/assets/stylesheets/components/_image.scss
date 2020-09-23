@@ -18,6 +18,9 @@
       align-self: center;
       padding-left: 8px;
     }
+    .startText{
+      display: none;
+    }
   }
   
 }
@@ -25,6 +28,41 @@
 .open .tomatoIcon{
   transform: translateX(518px);
   transition: 0.7s ease;
+  div{
+    @include pad(){
+      justify-content: center;
+    }
+      img{
+        @include pad(){
+          width: 60px;
+        }
+      }
+      p {
+        @include pad(){
+          display: block;
+        }
+      }
+      .fa-arrow-left{
+        @include pad(){
+          display: none;
+        }
+      }
+    }
+ 
+  @include largepc(){
+    transform: translateX(416px);
+  }
+  @include pc(){
+    transform: translateX(306px);
+  }
+  @include pad(){
+    border-radius: 0;
+    bottom: 0;
+    width: 87%;
+    background-color: $success-state;
+    height: 80px;
+    transform: translateX(-40px);
+  }
 }
 
 .tomato {

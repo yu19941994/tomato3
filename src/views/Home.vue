@@ -73,17 +73,20 @@
               <p class="font font-h5 totaltitle">TOMATO OF THIS WEEK</p>
               <div class="total">
                 <div class="tomatos">
-                  <p class="font font-text">8</p>
+                  <p class="font font-text">{{weekDateStatusLogArr[0].completedSum}}</p>
                   <p class="font font-h7">TODAY</p>
                 </div>
                 <div class="weekly">
-                  <p class="font font-text">20</p>
-                  <p class="font font-h7">07/08-07/14</p>
+                  <p class="font font-text">{{weekTotal}}</p>
+                  <p class="font font-h7">WEEK</p>
                 </div>
               </div>
               <p class="font font-h5 totaltitle">CHART</p>
               <div class="chart">
-                <div class="chart-inside"></div>
+                <!-- <div class="chart-inside"></div> -->
+              </div>
+              <div class="day">
+                <p class="font font-h7" v-for="(day,index) in weekDateStatusLogArr" :key="index">{{day.shortDateStr}}</p>
               </div>
               <div class="graphBtn">
                 <div class="btn-outline btn-outline-oprimary">PREV</div>
@@ -110,10 +113,10 @@
           </div>
           <div class="toolbar">
               <ul>
-                <li @click="menu = 'addNew'"><i href="#" class="fas fa-plus-circle"></i></li>
-                <li @click="menu = 'list'"><i href="#" class="fas fa-bars"></i></li>
-                <li @click="menu = 'graph'"><i href="#" class="fas fa-chart-bar"></i></li>
-                <li @click="menu = 'music'"><i href="#" class="fas fa-music"></i></li>
+                <li @click="menu = 'addNew'"><i href="#" class="fas fa-plus-circle" @click="isOpen = true"></i></li>
+                <li @click="menu = 'list'"><i href="#" class="fas fa-bars" @click="isOpen = true"></i></li>
+                <li @click="menu = 'graph'"><i href="#" class="fas fa-chart-bar" @click="isOpen = true"></i></li>
+                <li @click="menu = 'music'"><i href="#" class="fas fa-music"  @click="isOpen = true"></i></li>
               </ul>
           </div>
         </div>
@@ -226,6 +229,7 @@
           <img src="@/assets/stylesheets/image/tomato.png" alt="">
           <i class="fas fa-arrow-right" v-if="!isOpen"></i>
           <i class="fas fa-arrow-left" v-if="isOpen"></i>
+          <p class="font font-h3 startText">開始番茄鐘</p>
         </div> 
       </div>
       
@@ -265,19 +269,10 @@ export default {
         // maxTime: 25 * 60,
         maxTime: 10,
         percentage: 100,
-        // minutes: '01',
-        // seconds: '00'
       },
       isOpen: false,
       isShow: false,
-      // isStart: false,
-      // isDefault: true,
       noClock: true,
-      // targetTime: 25*60, //換成秒
-      // minutes:'',
-      // seconds:'',
-      // now:0,
-      // percentage: 100,
       timer: '',
       count: '',
       menu: 'addTask',
@@ -285,7 +280,9 @@ export default {
       visibility: 'todo',
       editingTodos: {},
       editingTitle: '',
-
+      todayTotal: 0,
+      weekTotal: 0,
+      now: new Date(),
       newTodoTemp: {
         title: '',
         timerTotal: 1
@@ -295,19 +292,20 @@ export default {
       // control 是控制時鐘
       control: {
         status: 'default',
-        // timeout: null,
         time: 0,
         minutes: '',
         seconds: '',
         percentage: 100
       },
-      listData: [0, 8, 2, 6, 3, 4, 9, 7],
+      weekDateStatusLogArr: []
     }
   },
   watch: {
-    menu (newValue) {
+    async menu (newValue) {
       switch (newValue) {
         case 'graph':
+          await this.dayTomatoCount()
+          await this.weekTomatoCount()
           this.$nextTick(() => this.getChart())
       }
     }
@@ -325,28 +323,14 @@ export default {
         this.activeTodo.timerCount++
         if (this.activeTodo.timerCount < this.activeTodo.timerTotal) {
           this.startTimer()
+        }else {
+          this.isShow = true
         }
-        // item.timerTotal --
-        // item.timerCount ++
-        // this.isShow = true
       }
-      // if (this.setting.maxTime > 0){
-      //   let secondsLeft = this.setting.maxTime--
-      //   this.setting.minutes = this.pad(parseInt(secondsLeft / 60))
-      //   this.setting.seconds = this.pad(parseInt(secondsLeft % 60))
-      // }else if(this.setting.maxTime === 0){
-      //   let secondsLeft = this.setting.maxTime--
-      //   this.setting.minutes = this.pad(parseInt(secondsLeft / 60))
-      //   this.setting.seconds = this.pad(parseInt(secondsLeft % 60))
-        
-      // }
+     
     },
     rotate () {
       this.control.percentage = 100 * (this.control.time / this.setting.maxTime)
-      // this.setting.percentage -= 1/2500
-      // if(this.setting.percentage <= 0) {
-      //   this.setting.percentage = 100
-      // }
     },
     pad (n) {
       //如果小於10，給它'0x'
@@ -372,11 +356,9 @@ export default {
       this.control.status = 'pause'
     },
     stopTimer () {
-      // clearInterval(this.count)
       clearInterval(this.timer)
       this.resetTimer()
       this.control.status = 'stop'
-      // this.count = null
     },
     resetTimer (isBtnTrigger) {
       // 要回到default時鐘
@@ -422,7 +404,6 @@ export default {
       this.isShow = false
     },
     editTodos (e) {
-      console.log(e.id)
       this.editingTodos = e
       this.editingTitle = e.title
     },
@@ -432,32 +413,12 @@ export default {
     },
     chooseTodo (todo) {
       this.activeTodoId = todo.id
-      //回到default
-      //撈標題即可
-      // this.isDefault = true
-      // this.setting.maxTime = 25 * 60
-      // this.todos.forEach(e => {
-      //   if(e.id === item.id){
-      //     e.isClock = true
-      //     // this.control.percentage = 100
-      //     // this.control.max = 25*60
-      //     // this.minutes = 25
-      //     // this.seconds = 0
-      //   }
-      // })
-      // this.singleClock(todo.id)
+     
     },
-    // singleClock (e) {
-    //   this.todos.forEach ((item)=>{
-    //     if(item.id !== e){
-    //       item.isClock = false
-    //     }
-    //   })
-    // },
     getChart () {
       d3.select('.chart')
         .selectAll(".chart-inside")
-        .data(this.listData)
+        .data(this.weekDateStatusLogArr.map(log => log.completedSum))
         .enter()
         .text(function (d) { return d})
         .append('div')
@@ -469,8 +430,57 @@ export default {
         // .append('p', (d => {
         //   return `this.listData`
         // }))
+    },
+    dayTomatoCount () {
+      let getFullDate = d => {
+        let date = new Date(d)
+        return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
+      }
+      let tempNowDate = getFullDate(new Date())
+      for (let i = 0; i < 7; i++) {
+        const timestamp = new Date(new Date().valueOf() + 86400000 * i)
+        console.log(timestamp)
+        const shortDateStr = `${timestamp.getMonth() + 1}/${timestamp.getDate()}`
+        console.log(shortDateStr)
+        if (!this.weekDateStatusLogArr[i]) {
+          this.weekDateStatusLogArr[i] = {}
+        }
+        this.weekDateStatusLogArr[i].shortDateStr = shortDateStr
+        this.weekDateStatusLogArr[i].completedSum = 0
+      }
+      
+      this.todos.forEach(todo => {
+        const todoDate = getFullDate(new Date())
+        if (todo.completed){
+          //拿今天去減掉過去
+          const dueDateNum = Math.floor((new Date(tempNowDate).valueOf() - new Date(todoDate).valueOf()) / 86400000)
+          // console.log(dueDateNum)
+          if (dueDateNum < 7) {
+            this.weekDateStatusLogArr[dueDateNum].completedSum++
+          }
+          // countAll = countAll + e.timerTotal
+        }
+      })
+      
+      // finishTomato = countAll
+      // this.listData.push(finishTomato)
+    },
+    // isSameWeek (){
+    //   let countWeek = 0
+    //   let oneDayTime = 1000*60*60*24
+    //   let date = new Date()
+    //   this.todos.forEach(e => {
+    //     if(parseInt((parseInt(e.date.getTime()/oneDayTime)+4)/7) === parseInt((parseInt(date.getTime()/oneDayTime)+4)/7)){
+    //       countWeek++   
+    //     }
+    //   })
+    //   this.weekTotal = countWeek
+    // }
+    weekTomatoCount () {
+      this.weekTotal = this.weekDateStatusLogArr.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.completedSum
+      }, 0)
     }
-
   },
   components: {},
   computed: {
@@ -502,9 +512,18 @@ export default {
     }
   },
   created () {
-    // this.defaultClock()
     this.resetTimer()
-    // this.countTime()
+    // this.todayTomatoCount()
   }
 }
 </script>
+<style lang="scss" scoped>
+.sidebarbox .sidebar .tasklist  .chart {
+  min-height: 250px;
+  display: flex;
+  align-items: flex-end;
+}
+.sidebarbox .sidebar .tasklist .chart .bar {
+
+}
+</style>

@@ -32,6 +32,9 @@
 
 .btn {
   padding: 12px 36px;
+  @include largepc(){
+    padding: 12px 22px;
+  }
 }
 
 .btn-lg{
